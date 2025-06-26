@@ -64,6 +64,10 @@ const router = createBrowserRouter([
         path: "payment/:parcelId",
         Component: Payment,
       },
+      {
+        path: "payment-history",
+        Component:
+      },
     ],
   },
 ]);

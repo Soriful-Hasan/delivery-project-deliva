@@ -80,12 +80,18 @@ const MyParcels = () => {
                 >
                   Delete
                 </button>
-                <button
-                  onClick={() => handlePayment(parcel._id)}
-                  className="btn btn-sm "
-                >
-                  Pay
-                </button>
+                {parcel.payment_status == "paid" ? (
+                  <button className="btn cursor-not-allowed disabled bg-gray-300 text-gray-400">
+                    Paid
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handlePayment(parcel._id)}
+                    className="btn btn-sm "
+                  >
+                    Pay
+                  </button>
+                )}
                 <button
                   onClick={() =>
                     Swal.fire({

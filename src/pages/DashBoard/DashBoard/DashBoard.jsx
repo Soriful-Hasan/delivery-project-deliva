@@ -1,15 +1,33 @@
 import { HiOutlineBars3BottomRight } from "react-icons/hi2";
 import { Link, Outlet } from "react-router";
 import Logo from "../../shared/logo-name/Logo";
-
+import { FaHome, FaBoxOpen, FaHistory, FaUserEdit } from "react-icons/fa";
 const DashBoard = () => {
   const link = [
-    <div className="mt-6">
+    <div className="mt-6 flex flex-col gap-5">
       <li>
-        <Link to={"my-order"}>My Parcels</Link>
+        <Link to={"/"}>
+          <FaHome style={{ marginRight: 8 }} />
+          Home
+        </Link>
       </li>
       <li>
-        <Link to={"/dashBoard"}>My Order</Link>
+        <Link to={"my-order"}>
+          <FaBoxOpen style={{ marginRight: 8 }} />
+          My Parcels
+        </Link>
+      </li>
+      <li>
+        <Link to={"/dashboard/payment-history"}>
+          <FaHistory style={{ marginRight: 8 }} />
+          Payment History
+        </Link>
+      </li>
+      <li>
+        <Link to={"/update-profile"}>
+          <FaUserEdit style={{ marginRight: 8 }} />
+          Update Profile
+        </Link>
       </li>
     </div>,
   ];

@@ -2,12 +2,18 @@ import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import React, { useState } from "react";
 import { Await, useParams } from "react-router";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuthContext from "../../../hooks/useAuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { AwardIcon } from "lucide-react";
+import Swal from "sweetalert2";
 
 const PaymentForm = () => {
   const AxiosSecure = useAxiosSecure();
+  const { user } = useAuthContext();
+  const displayName = user?.displayName;
+  const email = user?.email;
   const { parcelId } = useParams();
+
   console.log(parcelId);
   const {
     isPending,
@@ -20,11 +26,14 @@ const PaymentForm = () => {
       return res.data;
     },
   });
+
   const stripe = useStripe();
   const elements = useElements();
 
   const [error, setError] = useState("");
   const amount = parcelData.amount;
+  const tracking_Id = parcelData.tracking_Id;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) {
@@ -38,38 +47,64 @@ const PaymentForm = () => {
       type: "card",
       card,
     });
+
+    // check card payment method
     if (error) {
-      console.log(error);
+      // console.log(error);f
     } else {
       setError("");
       console.log("[PaymentMethod]", paymentMethod);
+
+      // post amount and id on payment intent api
+      const res = await AxiosSecure.post("/create-payment-intent", {
+        amount,
+        parcelId,
+      });
+
+      // get client secret on tha res
+      const clientSecret = res.data.clientSecret;
+
+      // conform payment when i have a client secret
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card,
+          billing_details: {
+            name: displayName,
+            email: email,
+          },
+        },
+      });
+
+      // check payment status
+      if (result.error) {
+        console.log(result.error.message);
+      } else {
+        if (result.paymentIntent.status === "succeeded") {
+          console.log(result);
+          const paymentHistory = {
+            parcelId,
+            tracking_Id: tracking_Id,
+            payment_method: result.paymentIntent.payment_method_types,
+            transaction_id: result.paymentIntent.id,
+            amount: result.paymentIntent.amount,
+            email: email,
+          };
+
+          const paymentRes = await AxiosSecure.post("/save", paymentHistory);
+          console.log(paymentRes);
+          if (paymentRes.data.paymentResult.insertedId) {
+            Swal.fire({
+              title: "Payment Successful!",
+              text: `Transaction ID: ${result.paymentIntent.id}`,
+              icon: "success",
+              confirmButtonText: "OK",
+            });
+          }
+        }
+      }
     }
 
     // create payment intent
-    const res = await AxiosSecure.post("/create-payment-intent", {
-      amount,
-      parcelId,
-    });
-
-    const clientSecret = res.data.clientSecret;
-    console.log(clientSecret);
-    // conform payment
-    const result = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card,
-        billing_details: {
-          name: "Your User Name", // or from user info
-          email: "user@example.com",
-        },
-      },
-    });
-    if (result.error) {
-      console.log(result.error.message);
-    } else {
-      if (result.paymentIntent.status === "succeeded") {
-        console.log(result  );
-      }
-    }
   };
 
   return (
