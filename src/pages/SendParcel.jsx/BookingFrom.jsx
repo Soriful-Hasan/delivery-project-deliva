@@ -8,7 +8,6 @@ import useAxiosSecure from "../../hooks/useAxiosSecure";
 const BookingForm = () => {
   const { user } = useAuthContext();
   const axiosInstance = useAxiosSecure();
-  console.log(axiosInstance);
 
   const { register, handleSubmit, watch, reset } = useForm();
   const [senderWarehouses, setSenderWarehouses] = useState([]);
@@ -24,7 +23,7 @@ const BookingForm = () => {
 
   const onSubmit = (data) => {
     //calculate delivery cost
-
+    console.log("data", data);
     let calculatedPrice = 0;
     if (parcelType === "document") {
       calculatedPrice = deliveryType === "within" ? 60 : 80;
@@ -102,6 +101,7 @@ const BookingForm = () => {
           delivery_status: "not_collection",
           creation_date: new Date().toISOString(),
           tracking_Id: trackingId,
+          amount: calculatedPrice,
         };
 
         // save date to server ========================
@@ -116,6 +116,7 @@ const BookingForm = () => {
 
         Swal.fire("Success!", "Your booking has been confirmed!", "success");
         console.log(parcelData);
+
         reset();
       }
     });

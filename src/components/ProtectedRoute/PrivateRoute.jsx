@@ -2,17 +2,21 @@ import React, { Children } from "react";
 import useAuthContext from "../../hooks/useAuthContext";
 import Register from "../../pages/auth/Register";
 import { Navigate, useLocation } from "react-router";
+import Loader from "../Loader/Loader";
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuthContext();
   const location = useLocation();
-  console.log(location);
+
   if (loading) {
-    return <span>Loading....</span>;
+    return <Loader></Loader>;
   }
   if (!user) {
     return (
-      <Navigate state={{ from: location.pathname }} to={"/auth/login"}></Navigate>
+      <Navigate
+        state={{ from: location.pathname }}
+        to={"/auth/login"}
+      ></Navigate>
     );
   }
   return children;

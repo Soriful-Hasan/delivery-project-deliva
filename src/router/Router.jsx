@@ -61,7 +61,7 @@ const router = createBrowserRouter([
         element: <MyParcels />,
       },
       {
-        path: "payment/:id",
+        path: "payment/:parcelId",
         Component: Payment,
       },
     ],
