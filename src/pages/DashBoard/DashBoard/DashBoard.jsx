@@ -1,34 +1,66 @@
 import { HiOutlineBars3BottomRight } from "react-icons/hi2";
 import { Link, Outlet } from "react-router";
 import Logo from "../../shared/logo-name/Logo";
-import { FaHome, FaBoxOpen, FaHistory, FaUserEdit } from "react-icons/fa";
+import {
+  FaHome,
+  FaBoxOpen,
+  FaHistory,
+  FaUserEdit,
+  FaUserClock,
+} from "react-icons/fa";
+import useUserRole from "../../../hooks/useUserRole";
 const DashBoard = () => {
+  const { role, rolLoading } = useUserRole();
+  console.log(role);
   const link = [
     <div className="mt-6 flex flex-col gap-5">
       <li>
-        <Link to={"/"}>
-          <FaHome style={{ marginRight: 8 }} />
-          Home
-        </Link>
-      </li>
-      <li>
-        <Link to={"my-order"}>
+        <Link to={"/dashboard/myParcel"}>
           <FaBoxOpen style={{ marginRight: 8 }} />
-          My Parcels
+          My Parcel
         </Link>
       </li>
       <li>
-        <Link to={"/dashboard/payment-history"}>
+        <Link to={"/dashboard/trackParcel"}>
+          <FaBoxOpen style={{ marginRight: 8 }} />
+          Track Parcel
+        </Link>
+      </li>
+      <li>
+        <Link to={"/dashboard/paymentHistory"}>
           <FaHistory style={{ marginRight: 8 }} />
           Payment History
         </Link>
       </li>
       <li>
-        <Link to={"/update-profile"}>
+        <Link to={"/dashboard/updateProfile"}>
           <FaUserEdit style={{ marginRight: 8 }} />
           Update Profile
         </Link>
       </li>
+
+      {!rolLoading && role === "admin" && (
+        <>
+          <li>
+            <Link to={"/dashboard/makeAdmin"}>
+              <FaBoxOpen style={{ marginRight: 8 }} />
+              Make Admin
+            </Link>
+          </li>
+          <li>
+            <Link to={"/dashboard/active-rider"}>
+              <FaUserClock style={{ marginRight: 8 }} />
+              Active Rider
+            </Link>
+          </li>
+          <li>
+            <Link to={"/dashboard/pending-rider"}>
+              <FaUserClock style={{ marginRight: 8 }} />
+              Pending Rider
+            </Link>
+          </li>
+        </>
+      )}
     </div>,
   ];
   return (

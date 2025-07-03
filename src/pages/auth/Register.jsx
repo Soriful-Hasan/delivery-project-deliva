@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import authImage from "../../assets/authImage.png";
 import Logo from "../shared/logo-name/Logo";
 import { useForm } from "react-hook-form";
@@ -6,9 +6,13 @@ import useAuthContext from "../../hooks/useAuthContext";
 import { AuthContext } from "../../context/AuthContext";
 import LoginWithGoogle from "../shared/GoogleLogin/LoginWithGoogle";
 import { Link } from "react-router";
+import axios from "axios";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 const Register = () => {
   // const { signUpUser } = useAuthContext();
-  const { signUpUser } = useAuthContext();
+  const { signUpUser, updateUserProfile } = useAuthContext();
+  const [profileImage, setProfileImage] = useState(null);
+  const axiosInstance = useAxiosSecure();
 
   const {
     register,
@@ -17,10 +21,48 @@ const Register = () => {
   } = useForm();
   const onSubmit = (data, e) => {
     e.preventDefault();
-    console.log(data.email);
+    const fullName = data.name;
+    const profileData = {
+      displayName: fullName,
+      photoURL: profileImage,
+    };
     signUpUser(data.email, data.password)
+      .then(async (signupRes) => {
+        const userData = {
+          email: data.email,
+          role: "user",
+          created_Data: new Date().toISOString(),
+          last_Register: new Date().toISOString(),
+        };
+
+        const userDataRes = await axiosInstance.post("user", userData);
+
+        alert("user create successfully");
+        // update profile function
+        updateUserProfile(profileData)
+          .then((res) => {
+            console.log(signupRes);
+            console.log(res);
+          })
+          .catch((error) => console.log(error));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handleUploadImage = (e) => {
+    const imageFile = e.target.files[0];
+    // setProfileImage(URL.createObjectURL(imageFile));
+    // console.log(profileImage);
+    const fromData = new FormData();
+    fromData.append("image", imageFile);
+    const url = `https://api.imgbb.com/1/upload?key=${
+      import.meta.env.VITE_image_upload_key
+    }`;
+    axios
+      .post(url, fromData)
       .then((res) => {
-        console.log(res.user);
+        setProfileImage(res.data.data.url);
       })
       .catch((error) => {
         console.log(error);
@@ -46,11 +88,21 @@ const Register = () => {
                       className="input w-full"
                       placeholder="Full Name"
                       name="name"
-                      {...register("email", { required: true })}
+                      {...register("name", { required: true })}
                     />
-                    {errors.email?.type === "required" && (
-                      <p className="text-red-500">email is required</p>
+                    {errors.name?.type === "required" && (
+                      <p className="text-red-500">name is required</p>
                     )}
+                  </div>
+                  <div>
+                    <label className="label">Select image</label>
+                    <input
+                      type="file"
+                      className="file-input w-full"
+                      placeholder="select Image"
+                      name="image"
+                      onChange={handleUploadImage}
+                    />
                   </div>
                   <div>
                     <label className="label">Email</label>
@@ -90,10 +142,10 @@ const Register = () => {
               <a className="text-sm mt-10">
                 Don't have any account?{" "}
                 <span className="text-black link link-hover  ">
-                  <Link to={'/auth/login'}>Register</Link>
+                  <Link to={"/auth/login"}>Register</Link>
                 </span>
               </a>
-              <LoginWithGoogle condition={'Register'}/>
+              <LoginWithGoogle condition={"Register"} />
             </div>
           </div>
         </div>

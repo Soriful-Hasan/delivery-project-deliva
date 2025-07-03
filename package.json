@@ -20,6 +20,7 @@
     "daisyui": "^5.0.43",
     "firebase": "^11.9.1",
     "flowbite": "^3.1.2",
+    "framer-motion": "^12.19.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.523.0",
     "react": "^19.1.0",

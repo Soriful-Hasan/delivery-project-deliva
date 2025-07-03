@@ -10,6 +10,15 @@ import DashBoardLayout from "../Layouts/DashBoardLayout";
 import PrivateRoute from "../components/ProtectedRoute/PrivateRoute";
 import MyParcels from "../pages/DashBoard/MyOrder/MyParcels";
 import Payment from "../pages/DashBoard/PaymentMathod/Payment";
+import PaymentHistory from "../pages/DashBoard/PaymentHistory/PaymentHistory";
+import TrackParcel from "../pages/DashBoard/TrackParcel/TrackParcel";
+import BeARider from "../pages/Rider/BeARider/BeARider";
+import PendingRider from "../pages/Rider/PandingRider/PendingRider";
+import ActiveRider from "../pages/Rider/AciveRider/ActiveRider";
+import MakeAdmin from "../pages/DashBoard/MakeAdmin/MakeAdmin";
+
+import AdminRoute from "../pages/DashBoard/Admin/AdminRoute";
+import Forbidden from "../pages/Forbidden/forbidden";
 
 const router = createBrowserRouter([
   {
@@ -25,12 +34,25 @@ const router = createBrowserRouter([
         Component: TrackOrder,
       },
       {
+        path: "forbidden",
+        Component: Forbidden,
+      },
+      {
         path: "/pricing",
         element: (
           <PrivateRoute>
             <SendParcel></SendParcel>
           </PrivateRoute>
         ),
+      },
+      {
+        path: "/beARider",
+        element: (
+          <PrivateRoute>
+            <BeARider></BeARider>
+          </PrivateRoute>
+        ),
+        loader: () => fetch("/warehouses.json"),
       },
     ],
   },
@@ -57,7 +79,7 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "my-order",
+        path: "myParcel",
         element: <MyParcels />,
       },
       {
@@ -65,8 +87,36 @@ const router = createBrowserRouter([
         Component: Payment,
       },
       {
-        path: "payment-history",
-        Component:
+        path: "pending-rider",
+        element: (
+          <AdminRoute>
+            <PendingRider></PendingRider>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "active-rider",
+        element: (
+          <AdminRoute>
+            <ActiveRider></ActiveRider>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "paymentHistory",
+        Component: PaymentHistory,
+      },
+      {
+        path: "trackParcel",
+        Component: TrackParcel,
+      },
+      {
+        path: "makeAdmin",
+        element: (
+          <AdminRoute>
+            <MakeAdmin></MakeAdmin>
+          </AdminRoute>
+        ),
       },
     ],
   },

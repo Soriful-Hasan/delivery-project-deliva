@@ -1,16 +1,30 @@
 import React from "react";
 import useAuthContext from "../../../hooks/useAuthContext";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const LoginWithGoogle = ({ condition }) => {
+  const axiosInstance = useAxiosSecure();
   const { signInWithGoogle } = useAuthContext();
+  const location = useLocation();
   const navigate = useNavigate();
-  const from = location.state?.from || "/";
+  const from = location.state?.pathname || "/";
+  console.log(from);
   const handleGoogleLogin = () => {
     signInWithGoogle()
-      .then((res) => {
+      .then(async (res) => {
         console.log(res.user);
+        console.log(from);
         navigate(from);
+        const userData = {
+          email: res.user.email,
+          role: "user",
+          created_Data: new Date().toISOString(),
+          last_Register: new Date().toISOString(),
+        };
+
+        const userDataRes = await axiosInstance.post("user", userData);
+        console.log(userDataRes.data);
       })
       .catch((error) => {
         console.log(error);

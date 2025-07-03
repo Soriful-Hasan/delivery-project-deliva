@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 
 const MyParcels = () => {
   const { user } = useAuthContext();
+  
   const axiosSecure = useAxiosSecure();
   const { data: parcels = [], refetch } = useQuery({
     queryKey: ["my-parcels", user?.email],
