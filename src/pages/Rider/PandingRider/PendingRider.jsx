@@ -66,7 +66,7 @@ const PendingRider = () => {
                 <td className="space-x-2">
                   <button
                     onClick={() =>
-                      handleAction(rider._id, "approve", user?.email)
+                      handleAction(rider._id, "approve", rider.email)
                     }
                     className="btn btn-xs btn-success"
                   >

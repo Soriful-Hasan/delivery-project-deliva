@@ -117,7 +117,7 @@ const BookingForm = () => {
         Swal.fire("Success!", "Your booking has been confirmed!", "success");
         console.log(parcelData);
 
-        reset();
+        // reset();
       }
     });
   };

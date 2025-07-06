@@ -17,8 +17,11 @@ import PendingRider from "../pages/Rider/PandingRider/PendingRider";
 import ActiveRider from "../pages/Rider/AciveRider/ActiveRider";
 import MakeAdmin from "../pages/DashBoard/MakeAdmin/MakeAdmin";
 
-import AdminRoute from "../pages/DashBoard/Admin/AdminRoute";
+import AdminRoute from "../pages/DashBoard/RoleProtected/Admin/AdminRoute";
 import Forbidden from "../pages/Forbidden/forbidden";
+import AssignRider from "../pages/DashBoard/AssignRider/AssignRider";
+import RiderRoute from "../pages/DashBoard/RoleProtected/Rider/RiderRoute";
+import PendingDeliveries from "../pages/Rider/PandingParcelRider/PendingDeliveries";
 
 const router = createBrowserRouter([
   {
@@ -116,6 +119,23 @@ const router = createBrowserRouter([
           <AdminRoute>
             <MakeAdmin></MakeAdmin>
           </AdminRoute>
+        ),
+      },
+      {
+        path: "assignRider",
+        element: (
+          <AdminRoute>
+            <AssignRider></AssignRider>
+          </AdminRoute>
+        ),
+      },
+
+      {
+        path: "pendingParcelForRider",
+        element: (
+          <RiderRoute>
+            <PendingDeliveries></PendingDeliveries>
+          </RiderRoute>
         ),
       },
     ],

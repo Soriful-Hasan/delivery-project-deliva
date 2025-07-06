@@ -1,8 +1,8 @@
 import React from "react";
-import useAuthContext from "../../../hooks/useAuthContext";
-import useUserRole from "../../../hooks/useUserRole";
+import useAuthContext from "../../../../hooks/useAuthContext";
+import useUserRole from "../../../../hooks/useUserRole";
 import { Navigate } from "react-router";
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../../../context/AuthContext";
 
 const AdminRoute = ({ children }) => {
   const { loading, user } = useAuthContext();

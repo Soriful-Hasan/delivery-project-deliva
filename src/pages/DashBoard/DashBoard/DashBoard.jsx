@@ -1,5 +1,5 @@
 import { HiOutlineBars3BottomRight } from "react-icons/hi2";
-import { Link, Outlet } from "react-router";
+import { Link, NavLink, Outlet } from "react-router";
 import Logo from "../../shared/logo-name/Logo";
 import {
   FaHome,
@@ -7,11 +7,13 @@ import {
   FaHistory,
   FaUserEdit,
   FaUserClock,
+  FaBox,
 } from "react-icons/fa";
 import useUserRole from "../../../hooks/useUserRole";
+import { FaUserPlus } from "react-icons/fa";
 const DashBoard = () => {
   const { role, rolLoading } = useUserRole();
-  console.log(role);
+
   const link = [
     <div className="mt-6 flex flex-col gap-5">
       <li>
@@ -39,6 +41,18 @@ const DashBoard = () => {
         </Link>
       </li>
 
+      {/* only rider access route */}
+      {!rolLoading && role === "rider" && (
+        <>
+          <li>
+            <Link to={"/dashboard/pendingParcelForRider"}>
+              <FaBox style={{ marginRight: 8 }} />
+              Pending Parcel for Rider
+            </Link>
+          </li>
+        </>
+      )}
+      {/* only admin access route */}
       {!rolLoading && role === "admin" && (
         <>
           <li>
@@ -52,6 +66,17 @@ const DashBoard = () => {
               <FaUserClock style={{ marginRight: 8 }} />
               Active Rider
             </Link>
+          </li>
+          <li>
+            <NavLink
+              to="/dashboard/assignRider"
+              className={({ isActive }) =>
+                isActive ? "text-primary font-semibold" : ""
+              }
+            >
+              <FaUserPlus style={{ marginRight: 8 }} />
+              Assign Rider
+            </NavLink>
           </li>
           <li>
             <Link to={"/dashboard/pending-rider"}>

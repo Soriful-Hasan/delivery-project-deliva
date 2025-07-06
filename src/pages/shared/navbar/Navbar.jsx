@@ -8,7 +8,7 @@ import { AuthContext } from "../../../context/AuthContext";
 const Navbar = () => {
   const { user } = useAuthContext();
   const { signOutUser } = useContext(AuthContext);
-
+  console.log(user);
   const handleLogout = (e) => {
     e.preventDefault();
     signOutUser()
@@ -77,9 +77,12 @@ const Navbar = () => {
         </div>
         <div className="navbar-end">
           {user ? (
-            <Link className="btn btn-primary" onClick={handleLogout}>
-              Log out
-            </Link>
+            <div className="space-x-6">
+              <Link className="btn btn-primary" onClick={handleLogout}>
+                Log out
+              </Link>
+              <button className="">{user.displayName}</button>
+            </div>
           ) : (
             <Link to={"auth/login"} className="btn">
               Log in
