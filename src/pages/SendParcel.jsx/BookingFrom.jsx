@@ -4,10 +4,12 @@ import Swal from "sweetalert2";
 import useAuthContext from "../../hooks/useAuthContext";
 import axios from "axios";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useTrackingLog from "../../hooks/useTrakingLog";
 
 const BookingForm = () => {
   const { user } = useAuthContext();
   const axiosInstance = useAxiosSecure();
+  const { mutate: addTrackingLog } = useTrackingLog();
 
   const { register, handleSubmit, watch, reset } = useForm();
   const [senderWarehouses, setSenderWarehouses] = useState([]);
@@ -108,6 +110,12 @@ const BookingForm = () => {
         axiosInstance
           .post(`/parcels`, parcelData)
           .then((res) => {
+            addTrackingLog({
+              tracking_Id: parcelData.tracking_Id, // string
+              status: "parcel_created",
+              details: `created by ${user?.displayName}`, // example status
+              updatedBy: user?.email || "system", // from AuthContext
+            });
             console.log("Successfully submit", res.data);
           })
           .catch((error) => {

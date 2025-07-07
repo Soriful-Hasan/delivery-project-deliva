@@ -1,13 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import useAuthContext from "../../../hooks/useAuthContext";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useTrackingLog from "../../../hooks/useTrakingLog";
 
 const PendingDeliveries = () => {
   const { user } = useAuthContext();
   const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
+  const { mutate: addTrackingLog } = useTrackingLog();
   const { data: pendingTask = [], isLoading } = useQuery({
     queryKey: ["riderTasks", user.email],
     queryFn: async () => {
@@ -19,22 +21,69 @@ const PendingDeliveries = () => {
   });
   // Mutation for updating delivery status
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, newStatus }) => {
+    mutationFn: async ({ parcel, newStatus }) => {
       console.log(newStatus);
-      console.log(id);
-      const res = await axiosSecure.patch(`/api/update-delivery-status/${id}`, {
-        newStatus,
-      });
+      const res = await axiosSecure.patch(
+        `/api/update-delivery-status/${parcel._id}`,
+        {
+          newStatus,
+        }
+      );
       return res.data;
     },
     onSuccess: () => {
-      Swal.fire("Success!", "Delivery status updated.", "success");
       queryClient.invalidateQueries(["pendingDeliveries"]);
     },
     onError: () => {
       Swal.fire("Error!", "Failed to update status.", "error");
     },
   });
+
+  const handleUpdateStatus = (parcel, status) => {
+    let selectStatus = "";
+    if (status === "in_transit") {
+      selectStatus = "in_transit";
+    } else if (status === "Delivered") {
+      selectStatus = "Delivered";
+    }
+    let trackDetails = "";
+    if (status === "in_transit") {
+      trackDetails = `Picked up by ${user?.displayName}`;
+    } else if (status === "Delivered") {
+      trackDetails = `Delivered by ${user?.displayName}`;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Mark this delivery as delivered?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateStatusMutation
+          .mutateAsync({
+            parcel,
+            newStatus: selectStatus,
+          })
+          .then(() => {
+            // success toast
+            addTrackingLog({
+              tracking_Id: parcel.tracking_Id,
+              status: selectStatus,
+              details: trackDetails,
+              updatedBy: user?.email || "system",
+            });
+            Swal.fire("Success!", "Delivery status updated.", "success");
+          })
+          .catch((error) => {
+            // error toast
+            Swal.fire("Error!", "Delivery status updated.", "error");
+          });
+      }
+    });
+  };
+
   if (isLoading) {
     return <p>Loading....</p>;
   }
@@ -61,43 +110,13 @@ const PendingDeliveries = () => {
               <td>{parcel.delivery_status}</td>
               <td>
                 <button
-                  onClick={() => {
-                    Swal.fire({
-                      title: "Are you sure?",
-                      text: "Mark this delivery as delivered?",
-                      icon: "question",
-                      showCancelButton: true,
-                      confirmButtonText: "Yes, update",
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        updateStatusMutation.mutate({
-                          id: parcel._id,
-                          newStatus: "Delivered",
-                        });
-                      }
-                    });
-                  }}
+                  onClick={() => handleUpdateStatus(parcel, "Delivered")}
                   className="btn btn-sm btn-success"
                 >
                   Mark Delivered
                 </button>
                 <button
-                  onClick={() => {
-                    Swal.fire({
-                      title: "Are you sure?",
-                      text: "Mark this delivery as delivered?",
-                      icon: "question",
-                      showCancelButton: true,
-                      confirmButtonText: "Yes, update",
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        updateStatusMutation.mutate({
-                          id: parcel._id,
-                          newStatus: "in_transit",
-                        });
-                      }
-                    });
-                  }}
+                  onClick={() => handleUpdateStatus(parcel, "in_transit")}
                   className="btn btn-sm btn-success"
                 >
                   In transit

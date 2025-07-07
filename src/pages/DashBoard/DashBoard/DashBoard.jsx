@@ -8,6 +8,7 @@ import {
   FaUserEdit,
   FaUserClock,
   FaBox,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 import useUserRole from "../../../hooks/useUserRole";
 import { FaUserPlus } from "react-icons/fa";
@@ -16,6 +17,12 @@ const DashBoard = () => {
 
   const link = [
     <div className="mt-6 flex flex-col gap-5">
+      <li>
+        <Link to={"/dashboard"}>
+          <FaBoxOpen style={{ marginRight: 8 }} />
+          Home
+        </Link>
+      </li>
       <li>
         <Link to={"/dashboard/myParcel"}>
           <FaBoxOpen style={{ marginRight: 8 }} />
@@ -48,6 +55,18 @@ const DashBoard = () => {
             <Link to={"/dashboard/pendingParcelForRider"}>
               <FaBox style={{ marginRight: 8 }} />
               Pending Parcel for Rider
+            </Link>
+          </li>
+          <li>
+            <Link to={"/dashboard/completedDelivery"}>
+              <FaBox style={{ marginRight: 8 }} />
+              Completed Delivery
+            </Link>
+          </li>
+          <li>
+            <Link to={"/dashboard/totalEarnings"}>
+              <FaMoneyBillWave style={{ marginRight: 8 }} />
+              Total Earnings
             </Link>
           </li>
         </>

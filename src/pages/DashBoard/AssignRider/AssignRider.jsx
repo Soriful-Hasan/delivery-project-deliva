@@ -7,13 +7,17 @@ import {
 } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useTrackingLog from "../../../hooks/useTrakingLog";
+import useAuthContext from "../../../hooks/useAuthContext";
 
 const AssignRider = () => {
   const queryClient = useQueryClient();
-
+  const { mutate: addTrackingLog } = useTrackingLog();
   const axiosSecure = useAxiosSecure();
   const [selectedParcel, setSelectedParcel] = useState(null);
+  const [assignRiderName, setAssignRiderName] = useState(null);
   const [handleModal, setHandleModal] = useState(false);
+  const { user } = useAuthContext();
   console.log("select parcel data", selectedParcel);
   // Fetch parcels
   const {
@@ -57,6 +61,7 @@ const AssignRider = () => {
   };
   const assignRiderMutation = useMutation({
     mutationFn: async ({ parcelId, riderId, riderName, riderEmail }) => {
+      setAssignRiderName(riderName);
       const res = await axiosSecure.patch(`/assign-rider/${parcelId}`, {
         riderId,
         riderName,
@@ -66,6 +71,12 @@ const AssignRider = () => {
     },
     onSuccess: () => {
       Swal.fire("Success!", "Rider assigned successfully", "success");
+      addTrackingLog({
+        tracking_Id: selectedParcel.tracking_Id, // string
+        status: `Assigned to ${assignRiderName}`,
+        details: `created by ${user?.displayName}`, // example status
+        updatedBy: user?.email || "system", // from AuthContext
+      });
       setHandleModal(false);
       setSelectedParcel(null);
       queryClient.invalidateQueries(["paidParcels", "notCollection"]); // refetch the parcel list

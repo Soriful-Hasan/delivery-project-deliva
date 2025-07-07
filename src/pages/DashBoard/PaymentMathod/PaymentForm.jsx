@@ -6,6 +6,7 @@ import useAuthContext from "../../../hooks/useAuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { AwardIcon } from "lucide-react";
 import Swal from "sweetalert2";
+import useTrackingLog from "../../../hooks/useTrakingLog";
 
 const PaymentForm = () => {
   const AxiosSecure = useAxiosSecure();
@@ -13,7 +14,7 @@ const PaymentForm = () => {
   const displayName = user?.displayName;
   const email = user?.email;
   const { parcelId } = useParams();
-
+  const { mutate: addTrackingLog } = useTrackingLog();
   console.log(parcelId);
   const {
     isPending,
@@ -98,6 +99,12 @@ const PaymentForm = () => {
               text: `Transaction ID: ${result.paymentIntent.id}`,
               icon: "success",
               confirmButtonText: "OK",
+            });
+            addTrackingLog({
+              tracking_Id: parcelData.tracking_Id, // string
+              status: "payment_done",
+              details: `Pay by ${user?.displayName}`, // example status
+              updatedBy: user?.email || "system", // from AuthContext
             });
           }
         }

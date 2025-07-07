@@ -22,6 +22,9 @@ import Forbidden from "../pages/Forbidden/forbidden";
 import AssignRider from "../pages/DashBoard/AssignRider/AssignRider";
 import RiderRoute from "../pages/DashBoard/RoleProtected/Rider/RiderRoute";
 import PendingDeliveries from "../pages/Rider/PandingParcelRider/PendingDeliveries";
+import CompletedDeliveries from "../pages/Rider/CompletedDeliveries/CompletedDeliveries";
+import TotalEarnings from "../pages/Rider/TotalEarnings/TotalEarnings";
+import CheckRoleDashboard from "../pages/DashBoard/DeshBoardHome/CheckRoleDashboard";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +85,10 @@ const router = createBrowserRouter([
     ),
     children: [
       {
+        index: true,
+        element: <CheckRoleDashboard />,
+      },
+      {
         path: "myParcel",
         element: <MyParcels />,
       },
@@ -135,6 +142,22 @@ const router = createBrowserRouter([
         element: (
           <RiderRoute>
             <PendingDeliveries></PendingDeliveries>
+          </RiderRoute>
+        ),
+      },
+      {
+        path: "completedDelivery",
+        element: (
+          <RiderRoute>
+            <CompletedDeliveries />
+          </RiderRoute>
+        ),
+      },
+      {
+        path: "totalEarnings",
+        element: (
+          <RiderRoute>
+            <TotalEarnings />
           </RiderRoute>
         ),
       },
